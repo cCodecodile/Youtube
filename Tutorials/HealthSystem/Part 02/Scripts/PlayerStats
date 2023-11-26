@@ -1,0 +1,64 @@
+using UnityEngine;
+public class PlayerStats : MonoBehaviour
+{
+    [SerializeField] private float maxHealth;
+
+    public HealthBar healthBar;
+
+    private StatusEffects statusEffects;
+    private float currentHealth;
+    private void Start()
+    {
+        statusEffects = GetComponent<StatusEffects>();
+
+        currentHealth = maxHealth;
+
+        healthBar.SetSliderMax(maxHealth);
+    }
+    public float GetCurrentHealth()
+    {
+        return currentHealth;
+    }
+    private void Update()
+    {
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+    public void DecreaseHealth(float amount)
+    {
+        currentHealth -= amount;
+    }
+    public void IncreaseHealth(float amount)
+    {
+        currentHealth += amount;
+    }
+    public void TakeDamage(float amount, StatusEffects.DamageType damageType)
+    {
+        DecreaseHealth(amount);
+
+        statusEffects.HandleStatusEffects(damageType);
+
+        healthBar.SetSlider(currentHealth);
+    }
+    public void HealPlayer(float amount)
+    {
+        IncreaseHealth(amount);
+        healthBar.SetSlider(currentHealth);
+    }
+    private void Die()
+    {
+        Debug.Log("You died!");
+
+        //Play death animation
+
+        //Activate death screen
+
+        //...
+    }
+}
