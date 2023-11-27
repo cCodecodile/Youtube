@@ -1,0 +1,73 @@
+using UnityEngine;
+using TMPro;
+public class PlayerStats : MonoBehaviour
+{
+    [SerializeField] private float maxHealth;
+
+    public HealthBar healthBar;
+
+    public TextMeshProUGUI healthAmountText;
+
+    private StatusEffects statusEffects;
+    private ArmorSystem armorSystem;
+
+    private float currentHealth;
+    private void Start()
+    {
+        statusEffects = GetComponent<StatusEffects>();
+        armorSystem = GetComponent<ArmorSystem>();
+
+        currentHealth = maxHealth;
+
+        healthBar.SetSliderMax(maxHealth);
+    }
+    public float GetCurrentHealth()
+    {
+        return currentHealth;
+    }
+    private void Update()
+    {
+        healthAmountText.text = currentHealth + " / " + maxHealth;
+
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+    public void DecreaseHealth(float amount)
+    {
+        currentHealth -= amount;
+    }
+    public void IncreaseHealth(float amount)
+    {
+        currentHealth += amount;
+    }
+    public void TakeDamage(float amount, StatusEffects.DamageType damageType)
+    {
+        float finalDamage = armorSystem.CalculateDamage(amount);
+        DecreaseHealth(finalDamage);
+
+        statusEffects.HandleStatusEffects(damageType);
+
+        healthBar.SetSlider(currentHealth);
+    }
+    public void HealPlayer(float amount)
+    {
+        IncreaseHealth(amount);
+        healthBar.SetSlider(currentHealth);
+    }
+    private void Die()
+    {
+        Debug.Log("You died!");
+
+        //Play death animation
+
+        //Activate death screen
+
+        //...
+    }
+}
