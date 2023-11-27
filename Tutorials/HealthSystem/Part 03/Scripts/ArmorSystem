@@ -1,0 +1,33 @@
+using UnityEngine;
+using TMPro;
+public class ArmorSystem : MonoBehaviour
+{
+    [SerializeField] private TextMeshProUGUI protectionAmountText;
+    [SerializeField] private GameObject armorHolder;
+
+    private float protectionAmount;
+
+    private void Update()
+    {
+        protectionAmountText.text = protectionAmount.ToString();
+    }
+    public void AddArmor(float amount, GameObject prefab)
+    {
+        protectionAmount = amount;
+        for (int i = 0; i < armorHolder.transform.childCount; i++)
+        {
+            Destroy(armorHolder.transform.GetChild(i).gameObject);
+        }
+
+        prefab.transform.SetParent(armorHolder.transform);
+        prefab.transform.position = transform.position;
+    }
+    public float CalculateDamage(float amount)
+    {
+        float finalDamage = amount - (amount * (protectionAmount / 100f));
+
+        Mathf.Round(finalDamage);
+
+        return finalDamage;
+    }
+}
