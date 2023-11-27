@@ -1,0 +1,74 @@
+using UnityEngine;
+using System.Collections;
+public class StatusEffects : MonoBehaviour
+{
+    private PlayerStats playerStats;
+
+    [SerializeField] private GameObject poisonParticleSystem;
+    private Coroutine poisonCorourine;
+    private bool isPoisoned = false;
+    public enum DamageType
+    {
+        Normal,
+        Poison,
+        Fire,
+        Electric
+    }
+    private void Start()
+    {
+        playerStats = GetComponent<PlayerStats>();
+    }
+    public void HandleStatusEffects(DamageType damageType)
+    {
+        switch (damageType)
+        {
+            case (DamageType.Normal):
+                break;
+
+            case (DamageType.Poison):
+
+                if (!isPoisoned)
+                {
+                    poisonCorourine = StartCoroutine(PoisonDamage());
+                }
+                break;
+
+            case (DamageType.Fire):
+                break;
+
+            case (DamageType.Electric):
+                break;
+        }
+    }
+    private IEnumerator PoisonDamage()
+    {
+        float amount = 2f;
+        float interval = 1f;
+
+        isPoisoned = true;
+
+        GameObject particles = Instantiate(poisonParticleSystem, transform.position, Quaternion.identity);
+        particles.transform.SetParent(transform);
+
+        while (playerStats.GetCurrentHealth() > 0)
+        {
+            playerStats.DecreaseHealth(amount);
+
+            playerStats.healthBar.SetSlider(playerStats.GetCurrentHealth());
+
+            yield return new WaitForSeconds(interval);
+        }
+    }
+    public void ClearPoisonEffect()
+    {
+        if (isPoisoned)
+        {
+            StopCoroutine(poisonCorourine);
+
+            GameObject particles = GetComponentInChildren<ParticleSystem>().gameObject;
+            Destroy(particles);
+
+            isPoisoned = false;
+        }
+    }
+}
